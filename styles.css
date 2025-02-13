@@ -1,0 +1,90 @@
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+}
+
+h1 {
+    color: #333;
+    font-size: 3em;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+}
+
+canvas {
+    border: 2px solid #000;
+    display: block;
+    margin: 20px auto;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.floating-div {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+#cover-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+    padding: 20px;
+    width: 100%;
+}
+
+.video-container {
+    width: 80%;
+    max-width: 800px;
+    margin: 20px 0;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+#intro-video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+#cover-page p {
+    font-size: 1.5em;
+    color: #666;
+    margin: 20px 0;
+}
+
+#start-button {
+    font-size: 1.5em;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+#start-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    background: linear-gradient(45deg, #45a049, #4CAF50);
+}
+
+#game-container {
+    display: none;
+    /* Aquí iría el canvas de p5.js */
+}

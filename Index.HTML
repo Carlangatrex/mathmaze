@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Math Maze</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+  </head>
+  <body style="margin: 0; padding: 0">
+    <div id="cover-page">
+      <video
+        id="background-video"
+        onclick="this.play(); this.onclick=null;"
+        loop
+        width="60%"
+        height="auto"
+        style="display: block; margin: 0 auto"
+      >
+        <source src="Videos/videojuego.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      <button id="start-button" style="display: block; margin: 20px auto">
+        Iniciar Juego
+      </button>
+    </div>
+    <div id="game-container" style="display: none">
+      <!-- Aquí va el contenido del juego -->
+    </div>
+    <script src="game.js"></script>
+  </body>
+</html>
