@@ -8,83 +8,95 @@ body {
     min-height: 100vh;
 }
 
-h1 {
-    color: #333;
-    font-size: 3em;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-    margin-bottom: 20px;
+#game-container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    justify-content: space-between;
+}
+
+#left-column,
+#middle-column,
+#right-column {
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#left-column {
+    width: 25%;
+    background-color: #e0e0e0;
+    margin: 0;
+}
+
+#middle-column {
+    width: 50%;
+    height: 700px;
+    background-color: #ffffff;
+}
+
+#right-column {
+    width: 25%;
+    background-color: #e0e0e0;
+    margin: 0;
 }
 
 canvas {
     border: 2px solid #000;
-    display: block;
-    margin: 20px auto;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-}
-
-.floating-div {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    font-size: 24px;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 10px;
-    border-radius: 10px;
-}
-
-#cover-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    text-align: center;
-    background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
-    padding: 20px;
-    width: 100%;
-}
-
-.video-container {
-    width: 80%;
-    max-width: 800px;
-    margin: 20px 0;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-}
-
-#intro-video {
+    background-color: #d3d3d3;
     width: 100%;
     height: auto;
-    display: block;
+    max-height: 100%;
 }
 
-#cover-page p {
-    font-size: 1.5em;
-    color: #666;
-    margin: 20px 0;
+#equation-box,
+#message-box {
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
-#start-button {
+h2 {
+    color: #333;
     font-size: 1.5em;
-    padding: 15px 40px;
-    border: none;
-    border-radius: 50px;
-    background: linear-gradient(45deg, #4CAF50, #45a049);
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: #4CAF50;
     color: white;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
-    margin-top: 20px;
+    padding: 15px 30px;
+    font-size: 20px;
+    transition: background-color 0.3s;
 }
 
-#start-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-    background: linear-gradient(45deg, #45a049, #4CAF50);
+button:hover {
+    background-color: #45a049;
 }
 
-#game-container {
+#lives-container {
+    display: flex;
+    align-items: center;
+}
+
+#lives-container img {
+    width: 30px;
+    height: auto;
+    margin-right: 5px;
+}
+
+#user-answer {
     display: none;
-    /* Aquí iría el canvas de p5.js */
+    /* Oculta el cuadro de texto inicialmente */
+    margin-top: 10px;
+}
+
+#submit-answer {
+    display: none;
+    /* Oculta el botón inicialmente */
+    margin-top: 10px;
 }
