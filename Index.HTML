@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <title>Math Maze</title>
     <link rel="stylesheet" href="styles.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+    <script src="libs/p5.js"></script>
+    <script src="libs/p5.sound.js"></script>
   </head>
   <body style="margin: 0; padding: 0">
     <div id="cover-page">
@@ -17,7 +17,7 @@
         height="auto"
         style="display: block; margin: 0 auto"
       >
-        <source src="Videos/videojuego.mp4" type="video/mp4" />
+        <source src="assets/Videos/videojuego.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
       <button id="start-button" style="display: block; margin: 20px auto">
@@ -25,7 +25,36 @@
       </button>
     </div>
     <div id="game-container" style="display: none">
-      <!-- Aquí va el contenido del juego -->
+      <!-- Primera columna: Ecuaciones, vidas y puntaje -->
+      <div id="left-column">
+        <h2>Ecuaciones</h2>
+        <div id="equation-box"></div>
+        <input
+          type="text"
+          id="user-answer"
+          placeholder="Ingresa tu respuesta"
+          style="display: none"
+        />
+        <button id="submit-answer" style="display: none">
+          Enviar Respuesta
+        </button>
+        <h2>Vidas:</h2>
+        <div id="lives-container">
+          <!-- Aquí se agregarán los corazones -->
+        </div>
+        <h2>Puntaje: <span id="score">0</span></h2>
+      </div>
+
+      <!-- Segunda columna: Laberinto -->
+      <div id="middle-column">
+        <canvas id="gameCanvas"></canvas>
+      </div>
+
+      <!-- Tercera columna: Mensajes del juego -->
+      <div id="right-column">
+        <h2>Mensajes</h2>
+        <div id="message-box"></div>
+      </div>
     </div>
     <script src="game.js"></script>
   </body>
