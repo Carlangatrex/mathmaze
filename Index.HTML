@@ -25,9 +25,10 @@
       </button>
     </div>
     <div id="game-container" style="display: none">
+      <!-- Contenido del juego aquí -->
       <!-- Primera columna: Ecuaciones, vidas y puntaje -->
       <div id="left-column">
-        <h2>Ecuaciones</h2>
+        <h2>Resuelve:</h2>
         <div id="equation-box"></div>
         <input
           type="text"
@@ -40,7 +41,7 @@
         </button>
         <h2>Vidas:</h2>
         <div id="lives-container">
-          <!-- Aquí se agregarán los corazones -->
+          <!-- Hearts will be added here by JavaScript -->
         </div>
         <h2>Puntaje: <span id="score">0</span></h2>
       </div>
@@ -49,13 +50,23 @@
       <div id="middle-column">
         <canvas id="gameCanvas"></canvas>
       </div>
-
-      <!-- Tercera columna: Mensajes del juego -->
-      <div id="right-column">
-        <h2>Mensajes</h2>
-        <div id="message-box"></div>
-      </div>
     </div>
     <script src="game.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        document
+          .getElementById("start-button")
+          .addEventListener("click", () => {
+            console.log("Start button clicked!");
+            startAudio();
+            document.getElementById("cover-page").style.display = "none";
+            document.getElementById("game-container").style.display = "flex";
+
+            const video = document.getElementById("background-video");
+            video.pause();
+            video.currentTime = 0;
+          });
+      });
+    </script>
   </body>
 </html>
