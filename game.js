@@ -66,6 +66,7 @@ const images = {
     resta: new Image(),
     multi: new Image(),
     divi: new Image(),
+    wall: new Image(),
 };
 
 images.player.src = 'assets/images/scientist.svg'; // Cambia a scientist.svg
@@ -75,6 +76,7 @@ images.multi.src = 'assets/images/multi.png';
 images.divi.src = 'assets/images/divi.png';
 images.prize.src = 'assets/images/calculator.png';
 images.background.src = 'assets/images/piso.jpg'; // Cargar la imagen de fondo
+images.wall.src = 'assets/images/concreto.jpg'; // Cargar la imagen de pared
 
 // Cargar sonidos usando el objeto Audio
 const correctSound = new Audio('assets/sounds/correct.mp3');
@@ -131,8 +133,9 @@ function gameLoop() {
 function drawGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(images.background, 0, 0, canvas.width, canvas.height); // Dibuja el fondo
-    drawMaze(); // Dibuja el laberinto
+    drawMaze();
     player.draw(); // Dibuja al jugador
+    checkDoors(); // Verifica si el jugador está cerca de una puerta
     updateScore(); // Actualiza el puntaje
 }
 
@@ -149,8 +152,16 @@ function drawMaze() {
     for (let i = 0; i < maze.length; i++) {
         for (let j = 0; j < maze[i].length; j++) {
             if (maze[i][j] === 1) {
-                ctx.fillStyle = 'black'; // Color de las paredes
-                ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize); // Dibuja la pared
+                // Dibujar la pared (cuadro negro)
+                // ctx.fillStyle = 'black';
+                // ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                // Usar la imagen de pared en lugar de un cuadro negro
+                if (images.wall) {
+                    ctx.drawImage(images.wall, j * cellSize, i * cellSize, cellSize, cellSize);
+                } else { // Si la imagen de pared no se ha cargado (por si acaso), dibuja un cuadro negro como respaldo
+                    ctx.fillStyle = 'black';
+                    ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                }
             } else if (maze[i][j] === 2) {
                 const doorImg = new Image();
                 doorImg.src = 'assets/images/madera.jpg'; // Ruta a la imagen de la puerta
@@ -250,7 +261,7 @@ function initDoors() {
     for (let i = 0; i < mazes[level].length; i++) {
         for (let j = 0; j < mazes[level][i].length; j++) {
             if (mazes[level][i][j] === 2) { // Si hay una puerta
-                doors.push({ x: j * 100, y: i * 100, open: false }); // Almacena la posición de la puerta
+                doors.push({ x: j * 100, y: i * 100, open: false, equationActive: false }); // Almacena la posición de la puerta y el estado de la ecuación
             }
         }
     }
@@ -258,40 +269,166 @@ function initDoors() {
 
 // Función para verificar si el jugador está cerca de una puerta
 function checkDoors() {
-    doors.forEach(door => {
-        if (!door.open && player.x < door.x + 40 && player.x + player.width > door.x && player.y < door.y + 40 && player.y + player.height > door.y) {
-            // Si el jugador está cerca de la puerta
+    console.log("🚪 checkDoors() INICIO - Puertas totales:", doors.length);
+    doors.forEach((door, index) => {
+        console.log(`🚪 Puerta ${index} - Detalles completos:`);
+        console.log(`   Coordenadas: (${door.x}, ${door.y})`);
+        console.log(`   Estado abierta: ${door.open}`);
+        console.log(`   Ecuación activa: ${door.equationActive}`);
+
+        // Verificar proximidad del jugador
+        const isNearDoor =
+            player.x < door.x + 50 &&
+            player.x + player.width > door.x - 50 &&
+            player.y < door.y + 50 &&
+            player.y + player.height > door.y - 50;
+
+        console.log(`   ¿Jugador cerca?: ${isNearDoor}`);
+        console.log(`   Posición jugador: (${player.x}, ${player.y})`);
+        console.log(`   Dimensiones jugador: width=${player.width}, height=${player.height}`);
+
+        if (!door.open && !door.equationActive && isNearDoor) {
+            console.log(`🔓 Activando ecuación para puerta ${index}`);
             currentEquation = generateEquation(); // Genera una ecuación
-            document.getElementById('equation-box').textContent = `Resuelve la ecuación: ${currentEquation}`; // Muestra la ecuación
-            document.getElementById('user-answer').style.display = 'block'; // Muestra el cuadro de texto
+            displayCurrentEquation(); // Muestra la ecuación en el cuadro de ecuaciones
+            document.getElementById('user-answer').style.display = 'block'; // Muestra el cuadro de texto de respuesta
             document.getElementById('submit-answer').style.display = 'block'; // Muestra el botón de respuesta
+            door.equationActive = true; // Establecer equationActive a true
         }
     });
 }
 
 // Evento para manejar el envío de la respuesta
 document.getElementById('submit-answer').addEventListener('click', () => {
-    const userAnswer = parseInt(document.getElementById('user-answer').value); // Obtiene la respuesta del usuario
-    if (userAnswer === eval(currentEquation.replace('=', ''))) { // Verifica la respuesta
-        doors.forEach(door => {
-            if (!door.open && player.x < door.x + 40 && player.x + player.width > door.x && player.y < door.y + 40 && player.y + player.height > door.y) {
-                door.open = true; // Abre la puerta
-                alert("¡Puerta abierta!"); // Mensaje de éxito
-                document.getElementById('equation-box').textContent = ''; // Limpia la ecuación
-                document.getElementById('user-answer').style.display = 'none'; // Oculta el cuadro de texto
-                document.getElementById('submit-answer').style.display = 'none'; // Oculta el botón de respuesta
+    console.log("🔍 INICIO - Botón de enviar respuesta clickeado");
+    console.log("Ecuación actual:", currentEquation);
+
+    // Obtener el valor del input
+    const userAnswerInput = document.getElementById('user-answer');
+    const userAnswer = parseInt(userAnswerInput.value);
+
+    console.log("Respuesta del usuario:", userAnswer);
+    console.log("Puertas existentes:", doors.length);
+
+    // Verificar si la respuesta está vacía
+    if (isNaN(userAnswer)) {
+        displayMessage("Por favor, ingresa una respuesta válida");
+        console.warn("⚠️ Respuesta vacía o inválida");
+        return;
+    }
+
+    // Calcular respuesta correcta
+    const correctAnswer = eval(currentEquation.replace('= ?', '').trim());
+
+    console.log("Respuesta correcta:", correctAnswer);
+    console.log("Posición del jugador:", player.x, player.y);
+
+    // Comparar respuestas
+    if (userAnswer === correctAnswer) {
+        console.log("✅ RESPUESTA CORRECTA");
+
+        // Lógica para abrir puertas
+        let doorsUnlocked = 0;
+        doors.forEach((door, index) => {
+            console.log(`🚪 Puerta ${index}:`);
+            console.log(`Coordenadas: (${door.x}, ${door.y})`);
+            console.log(`Estado actual: open=${door.open}, equationActive=${door.equationActive}`);
+
+            // Condiciones más detalladas para verificar proximidad
+            const isNearDoor =
+                player.x < door.x + 50 &&
+                player.x + player.width > door.x - 50 &&
+                player.y < door.y + 50 &&
+                player.y + player.height > door.y - 50;
+
+            console.log(`¿Está cerca de la puerta? ${isNearDoor}`);
+
+            if (!door.open && isNearDoor) {
+                door.open = true;
+                door.equationActive = false;
+                doorsUnlocked++;
+
+                console.log(`🔓 Puerta ${index} desbloqueada`);
+
+                // Calcular fila y columna de la puerta en el laberinto
+                const doorRow = Math.floor(door.y / 100);
+                const doorCol = Math.floor(door.x / 100);
+
+                // Cambiar el valor en la matriz del laberinto
+                mazes[level][doorRow][doorCol] = 0;
+                console.log(`Matriz del laberinto actualizada en (${doorRow}, ${doorCol})`);
             }
         });
+
+        // Limpiar input y ocultar elementos si se desbloqueó al menos una puerta
+        if (doorsUnlocked > 0) {
+            userAnswerInput.value = '';
+            userAnswerInput.style.display = 'none';
+            document.getElementById('submit-answer').style.display = 'none';
+
+            // Mensaje con número de puertas
+            displayMessage(`¡Respuesta correcta! ${doorsUnlocked} puerta(s) desbloqueada(s).`);
+        }
     } else {
-        alert("Respuesta incorrecta. Intenta de nuevo."); // Mensaje de error
+        console.log("❌ Respuesta INCORRECTA");
+        displayMessage(`Respuesta incorrecta. La respuesta correcta era ${correctAnswer}. ¡Inténtalo de nuevo!`);
     }
+
+    // Limpiar ecuación actual
+    currentEquation = '';
+    displayCurrentEquation();
 });
+
+console.log("Event listener for submit-answer button attached!"); // Debugging: Confirm event listener attachment
 
 // Función para generar una ecuación aleatoria
 function generateEquation() {
     const num1 = Math.floor(Math.random() * 10) + 1;
     const num2 = Math.floor(Math.random() * 10) + 1;
-    return `${num1} + ${num2} = ?`; // Cambia esto según el nivel
+    return `${num1} + ${num2} = ?`; // Ecuaciones dinámicas
+}
+
+// Función para mostrar la ecuación actual en el cuadro de ecuaciones
+function displayCurrentEquation() {
+    console.log("displayCurrentEquation() is called, currentEquation:", currentEquation); // Debugging message
+    const equationBox = document.getElementById('equation-box');
+    equationBox.textContent = currentEquation ? `Resuelve: ${currentEquation}` : ''; // Muestra la ecuación o limpia el cuadro
+}
+
+// Función para mostrar mensajes en el cuadro de mensajes
+function displayMessage(message) {
+    // Crear un div para el mensaje si no existe
+    let messageDiv = document.getElementById('game-message');
+
+    if (!messageDiv) {
+        messageDiv = document.createElement('div');
+        messageDiv.id = 'game-message';
+        messageDiv.style.position = 'fixed';
+        messageDiv.style.top = '20px';
+        messageDiv.style.left = '50%';
+        messageDiv.style.transform = 'translateX(-50%)';
+        messageDiv.style.backgroundColor = 'rgba(0,0,0,0.7)';
+        messageDiv.style.color = 'white';
+        messageDiv.style.padding = '10px 20px';
+        messageDiv.style.borderRadius = '5px';
+        messageDiv.style.zIndex = '1000';
+        messageDiv.style.textAlign = 'center';
+        messageDiv.style.fontSize = '16px';
+
+        document.body.appendChild(messageDiv);
+    }
+
+    // Mostrar el mensaje
+    messageDiv.textContent = message;
+    messageDiv.style.display = 'block';
+
+    // Ocultar después de 3 segundos
+    setTimeout(() => {
+        messageDiv.style.display = 'none';
+    }, 3000);
+
+    // Log adicional en consola
+    console.log(message);
 }
 
 // Llama a initDoors(), updateLives(), generateEquations() y displayEquations() después de inicializar el juego
@@ -299,12 +436,11 @@ document.addEventListener('DOMContentLoaded', () => {
     init();
     initDoors(); // Inicializa las puertas
     updateLives(); // Muestra los corazones al iniciar el juego
-    generateEquations(); // Genera las ecuaciones al iniciar el juego
-    displayEquations(); // Muestra las ecuaciones en el contenedor
     document.getElementById('start-button').addEventListener('click', () => {
         startAudio(); // Inicia el audio al hacer clic en el botón
         document.getElementById('cover-page').style.display = 'none'; // Oculta la pantalla de inicio
-        document.getElementById('game-container').style.display = 'block'; // Muestra el contenedor del juego
+        document.getElementById('game-container').style.display = 'flex'; // Muestra el contenedor del juego
+        displayCurrentEquation(); // Clear equation box when game starts
 
         // Detener el video
         const video = document.getElementById('background-video');
